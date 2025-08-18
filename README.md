@@ -22,7 +22,7 @@ docker-compose up
 \`\`\`
 
 3. **Acceder a la aplicación**
-- URL: `http://localhost:8501`
+- URL: http://localhost:8501
 
 ## 🏗️ Arquitectura del sistema
 
@@ -52,6 +52,16 @@ docker-compose up
 │                      (ChromaDB)                             │
 └─────────────────────────────────────────────────────────────┘
 \`\`\`
+
+### Componentes principales:
+
+**Capa de Presentación**: Interfaz de usuario desarrollada en Streamlit que maneja la interacción con el usuario, carga de archivos y visualización de respuestas.
+
+**Capa de Lógica de Negocio**: Gestiona el flujo conversacional, coordina las operaciones entre capas y mantiene el estado de la sesión.
+
+**Capa de Servicios**: Procesa documentos PDF, genera embeddings vectoriales y se comunica con la API de Gemini para generar respuestas.
+
+**Capa de Persistencia**: Almacena los vectores de documentos en ChromaDB para realizar búsquedas semánticas eficientes.
 
 ## 🔧 Justificación de elecciones técnicas
 
