@@ -2,20 +2,47 @@
 
 Una aplicación de inteligencia artificial que permite a los usuarios subir documentos PDF y realizar consultas en lenguaje natural sobre su contenido.
 
+## Prerequisitos
+
+Antes de ejecutar la aplicación, asegúrate de tener instalado:
+
+- **Docker**: [Descargar Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- **Docker Compose**: Incluido con Docker Desktop
+
+Para verificar la instalación:
+\`\`\`bash
+docker --version
+docker-compose --version
+\`\`\`
+
 ## Instrucciones para levantar el entorno
 
-1. **Editar el archivo .env y agregar tu GOOGLE_API_KEY**
+1. **Clonar el repositorio**
+\`\`\`bash
+git clone <url-del-repositorio>
+cd catchai-copilot
+\`\`\`
+
+2. **Configurar variables de entorno**
+   - Crear archivo `.env` en la raíz del proyecto
+   - Agregar tu Google API Key:
 \`\`\`
 GOOGLE_API_KEY=tu_clave_api_aqui
 \`\`\`
 
-2. **Levantar el entorno**
+3. **Construir y levantar los contenedores**
 \`\`\`bash
-docker-compose up
+docker-compose up --build
 \`\`\`
 
-3. **Acceder a la aplicación**
-- URL: http://localhost:8501
+4. **Acceder a la aplicación**
+   - Abrir navegador en: http://localhost:8501
+   - La aplicación estará lista cuando veas "You can now view your Streamlit app"
+
+5. **Para detener la aplicación**
+\`\`\`bash
+docker-compose down
+\`\`\`
 
 ## Arquitectura del sistema
 
@@ -62,7 +89,11 @@ El sistema utiliza una **Arquitectura por Capas** que separa las responsabilidad
 
 ### Limitaciones actuales:
 - Solo soporta archivos PDF
+- Diseñado para un usuario por sesión
 - No mantiene historial entre sesiones
+- Limitado por la RAM disponible
 
 ### Mejoras futuras:
-- Soporte para DOCX y TXT, mejorar UI
+- **Corto plazo**: Soporte para DOCX y TXT, mejorar UI
+- **Mediano plazo**: Múltiples usuarios, persistencia de sesiones
+- **Largo plazo**: Procesamiento de imágenes, integración con cloud storage
