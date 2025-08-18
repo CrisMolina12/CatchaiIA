@@ -39,14 +39,14 @@ class ConversationManager:
         
         if hasattr(st.session_state, 'conversation_api_hash'):
             if st.session_state.conversation_api_hash != current_hash:
-                print(f"[v0] 🔄 API key change detected in ConversationManager")
+                print(f"[DEBUG] API key change detected in ConversationManager")
                 self._clear_conversation_data()
         
         st.session_state.conversation_api_hash = current_hash
         
         if not google_api_key or google_api_key == "tu_google_api_key_aqui":
-            st.error("⚠️ GOOGLE_API_KEY no configurada. Por favor configura tu API key de Google.")
-            st.info("🔗 Obtén tu API key gratuita en: https://makersuite.google.com/app/apikey")
+            st.error("GOOGLE_API_KEY no configurada. Por favor configura tu API key de Google.")
+            st.info("Obtén tu API key gratuita en: https://makersuite.google.com/app/apikey")
             st.stop()
         
         try:
@@ -56,9 +56,9 @@ class ConversationManager:
                 google_api_key=google_api_key,
                 max_output_tokens=2048
             )
-            print(f"[v0] ✅ Gemini inicializado exitosamente con cuenta: {current_hash}")
+            print(f"[DEBUG] Gemini inicializado exitosamente con cuenta: {current_hash}")
         except Exception as e:
-            st.error(f"❌ Error inicializando Gemini: {e}")
+            st.error(f"Error inicializando Gemini: {e}")
             st.info("Verifica que tu GOOGLE_API_KEY sea válida")
             st.stop()
     
@@ -67,10 +67,8 @@ class ConversationManager:
         if hasattr(self, 'memory'):
             self.memory.clear()
         
-        # Clear conversation chain to force recreation
         self.conversation_chain = None
         
-        # Clear related session state
         conversation_keys = [
             'chat_history',
             'conversation_manager',
@@ -81,7 +79,7 @@ class ConversationManager:
             if key in st.session_state:
                 del st.session_state[key]
         
-        print("[v0] 🔄 Conversation data cleared for account change")
+        print("[DEBUG] Conversation data cleared for account change")
 
     def _get_diverse_context(self, question: str, k_per_doc: int = 5) -> List[Document]:
         """Get diverse chunks from all documents to ensure all PDFs are represented"""
@@ -89,7 +87,6 @@ class ConversationManager:
             return []
         
         try:
-            # Get all unique document sources
             all_docs = self.vector_store.get()
             unique_sources = set()
             if all_docs and 'metadatas' in all_docs:
@@ -97,34 +94,30 @@ class ConversationManager:
                     if metadata and 'source' in metadata:
                         unique_sources.add(metadata['source'])
             
-            print(f"[v0] Found {len(unique_sources)} unique documents: {list(unique_sources)}")
+            print(f"[DEBUG] Found {len(unique_sources)} unique documents: {list(unique_sources)}")
             
             diverse_docs = []
             
-            # Get chunks from each document
             for source in unique_sources:
                 try:
-                    # Search with filter for specific document
                     source_docs = self.vector_store.similarity_search(
                         question,
                         k=k_per_doc,
                         filter={"source": source}
                     )
                     diverse_docs.extend(source_docs)
-                    print(f"[v0] Retrieved {len(source_docs)} chunks from {source}")
+                    print(f"[DEBUG] Retrieved {len(source_docs)} chunks from {source}")
                 except Exception as e:
-                    print(f"[v0] Error retrieving from {source}: {e}")
-                    # Fallback: get all docs and filter manually
+                    print(f"[DEBUG] Error retrieving from {source}: {e}")
                     all_source_docs = self.vector_store.similarity_search(question, k=25)
                     filtered_docs = [doc for doc in all_source_docs if doc.metadata.get('source') == source]
                     diverse_docs.extend(filtered_docs[:k_per_doc])
             
-            print(f"[v0] Total diverse chunks retrieved: {len(diverse_docs)}")
+            print(f"[DEBUG] Total diverse chunks retrieved: {len(diverse_docs)}")
             return diverse_docs
             
         except Exception as e:
-            print(f"[v0] Error in diverse retrieval: {e}")
-            # Fallback to regular retrieval with higher k
+            print(f"[DEBUG] Error in diverse retrieval: {e}")
             return self.vector_store.similarity_search(question, k=25)
 
     def _setup_conversation_chain(self):
@@ -169,8 +162,8 @@ Respuesta:"""
             }
         
         try:
-            print(f"[v0] Procesando pregunta: {question}")
-            print(f"[v0] Usando Gemini con cuenta: {st.session_state.get('conversation_api_hash', 'unknown')}")
+            print(f"[DEBUG] Procesando pregunta: {question}")
+            print(f"[DEBUG] Usando Gemini con cuenta: {st.session_state.get('conversation_api_hash', 'unknown')}")
             
             diverse_docs = self._get_diverse_context(question)
             
@@ -187,7 +180,7 @@ Respuesta:"""
                 structured_context += "\n".join(contents[:3])
                 structured_context += "\n"
             
-            print(f"[v0] Context built from {len(context_by_source)} documents")
+            print(f"[DEBUG] Context built from {len(context_by_source)} documents")
             
             prompt_text = f"""Eres un asistente especializado en analizar documentos PDF. Responde de forma concisa y directa.
 
@@ -208,10 +201,10 @@ Respuesta:"""
             response = self.llm.invoke(prompt_text)
             end_time = time.time()
             
-            print(f"[v0] Respuesta generada en {end_time - start_time:.2f} segundos")
+            print(f"[DEBUG] Respuesta generada en {end_time - start_time:.2f} segundos")
             
             source_files = set(context_by_source.keys())
-            print(f"[v0] Archivos consultados: {list(source_files)}")
+            print(f"[DEBUG] Archivos consultados: {list(source_files)}")
             
             return {
                 "answer": response.content,
@@ -220,32 +213,32 @@ Respuesta:"""
             }
         
         except Exception as e:
-            print(f"[v0] Error: {type(e).__name__}: {str(e)}")
+            print(f"[DEBUG] Error: {type(e).__name__}: {str(e)}")
             error_message = str(e).lower()
             
             if any(keyword in error_message for keyword in ["429", "quota", "rate limit", "exceeded", "too many requests"]):
                 return {
-                    "answer": """⚠️ **Límite de Gemini alcanzado**
+                    "answer": """Límite de Gemini alcanzado
                     
-**Posibles soluciones:**
-1. **Cambiar de cuenta Google:** Usa el botón "Reiniciar Sesión Completa" en la barra lateral
+Posibles soluciones:
+1. Cambiar de cuenta Google: Usa el botón "Reiniciar Sesión Completa" en la barra lateral
 2. Espera 1-2 minutos y vuelve a intentar
 3. Verifica tu cuota en https://aistudio.google.com/
 4. Considera usar menos texto en tus preguntas
 
-💡 **Tip:** Si tienes otra cuenta Google, cámbiala para obtener créditos frescos""",
+Tip: Si tienes otra cuenta Google, cámbiala para obtener créditos frescos""",
                     "source_documents": [],
                     "rate_limited": True
                 }
             elif any(keyword in error_message for keyword in ["api key", "authentication", "unauthorized", "401"]):
                 return {
-                    "answer": "❌ Error de autenticación: Verifica que tu GOOGLE_API_KEY esté configurada correctamente",
+                    "answer": "Error de autenticación: Verifica que tu GOOGLE_API_KEY esté configurada correctamente",
                     "source_documents": [],
                     "error_type": "auth_error"
                 }
             else:
                 return {
-                    "answer": f"❌ Error: {str(e)}",
+                    "answer": f"Error: {str(e)}",
                     "source_documents": [],
                     "error_type": "unknown_error"
                 }

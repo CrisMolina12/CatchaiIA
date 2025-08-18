@@ -15,13 +15,13 @@ class DocumentProcessor:
         google_api_key = os.getenv("GOOGLE_API_KEY")
         
         if not google_api_key:
-            st.error("⚠️ GOOGLE_API_KEY no configurada")
+            st.error("GOOGLE_API_KEY no configurada")
             st.stop()
         
         current_hash = self._get_api_key_hash(google_api_key)
         if hasattr(st.session_state, 'processor_api_hash'):
             if st.session_state.processor_api_hash != current_hash:
-                print(f"[v0] 🔄 API key change detected in DocumentProcessor")
+                print(f"[DEBUG] API key change detected in DocumentProcessor")
                 self._cleanup_old_data()
         
         st.session_state.processor_api_hash = current_hash
@@ -53,20 +53,18 @@ class DocumentProcessor:
                         item_path = os.path.join(data_dir, item)
                         if os.path.isdir(item_path):
                             shutil.rmtree(item_path)
-                            print(f"[v0] 🗑️ Cleaned up old vector store: {item}")
+                            print(f"[DEBUG] Cleaned up old vector store: {item}")
         except Exception as e:
-            print(f"[v0] Warning: Could not clean up old data: {e}")
+            print(f"[DEBUG] Warning: Could not clean up old data: {e}")
         
-        # Reset vector store
         self.vector_store = None
         
-        # Clear related session state
         cleanup_keys = ['documents_processed', 'processing_results', 'current_files']
         for key in cleanup_keys:
             if key in st.session_state:
                 del st.session_state[key]
         
-        print("[v0] 🔄 Document processor data cleaned for account change")
+        print("[DEBUG] Document processor data cleaned for account change")
         
     def process_pdfs(self, uploaded_files) -> Dict[str, Any]:
         """Procesa los PDFs subidos y los vectoriza"""
@@ -123,13 +121,13 @@ class DocumentProcessor:
                 embedding=self.embeddings,
                 persist_directory=unique_dir
             )
-            print(f"[v0] ✅ Vector store created for account: {account_hash}")
+            print(f"[DEBUG] Vector store created for account: {account_hash}")
         except Exception as e:
             st.error(f"Error creando índice vectorial: {e}")
             st.info("Verifica que tu GOOGLE_API_KEY tenga permisos para embeddings")
             raise e
         
-        status_text.text('✅ Procesamiento completado!')
+        status_text.text('Procesamiento completado!')
         progress_bar.empty()
         status_text.empty()
         

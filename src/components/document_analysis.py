@@ -58,7 +58,7 @@ def render_document_analysis():
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown('<div class="analysis-title">📊 Análisis de Documentos</div>', unsafe_allow_html=True)
+    st.markdown('<div class="analysis-title">Análisis de Documentos</div>', unsafe_allow_html=True)
     
     if not st.session_state.processing_results:
         st.info("No hay documentos procesados para analizar.")
@@ -72,11 +72,11 @@ def render_document_analysis():
         
         with col1:
             total_docs = results.get('total_documents', 0)
-            st.metric("📄 Total Chunks", int(total_docs) if total_docs else 0)
+            st.metric("Total Chunks", int(total_docs) if total_docs else 0)
         
         with col2:
             file_count = len(results.get('file_summaries', {}))
-            st.metric("📁 Archivos", file_count)
+            st.metric("Archivos", file_count)
         
         with col3:
             total_pages = 0
@@ -88,7 +88,7 @@ def render_document_analysis():
                         total_pages += int(pages)
             st.metric("📖 Total Páginas", total_pages)
         
-        st.markdown('<div class="section-title">📋 Detalle de Archivos</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title"> Detalle de Archivos</div>', unsafe_allow_html=True)
         
         file_summaries = results.get('file_summaries', {})
         if file_summaries:
@@ -98,12 +98,12 @@ def render_document_analysis():
                     chunks = info.get('chunks', 0)
                     size = info.get('size', 0)
                     
-                    # Convert to safe types and display with better styling
+                    # Convertir a tipos seguros y mostrar con mejor estilo
                     pages = int(pages) if isinstance(pages, (int, float)) else 0
                     chunks = int(chunks) if isinstance(chunks, (int, float)) else 0
                     size_mb = round(size / (1024 * 1024), 2) if isinstance(size, (int, float)) and size > 0 else 0
                     
-                    st.markdown(f'<div class="file-name">📄 {filename}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div class="file-name"> {filename}</div>', unsafe_allow_html=True)
                     st.markdown(f"""
                     <div class="file-details">
                         • <strong>Páginas:</strong> {pages}<br>
@@ -115,7 +115,7 @@ def render_document_analysis():
         else:
             st.info("No hay datos de archivos para mostrar.")
         
-        st.markdown('<div class="section-title">🏷️ Análisis Temático</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title"> Análisis Temático</div>', unsafe_allow_html=True)
         
         if st.button("🔍 Identificar Temas Principales"):
             with st.spinner("Analizando temas..."):
@@ -165,7 +165,7 @@ def identify_themes():
         if not result or 'answer' not in result:
             return []
         
-        # Parsear respuesta (simplificado)
+        # Parsear respuesta 
         themes = []
         sections = result["answer"].split("---")
         

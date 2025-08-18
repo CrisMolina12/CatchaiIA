@@ -52,7 +52,6 @@ def render_chat_interface():
         font-family: 'Inter', sans-serif;
     }
     
-    /* Eliminar estilos que causan bloques blancos */
     .stMarkdown { margin: 0 !important; }
     .element-container { margin: 0 !important; }
     </style>
@@ -60,7 +59,7 @@ def render_chat_interface():
     
     st.markdown("""
     <div class="chat-header">
-        <h2 style="margin:0; font-size:1.8rem;">💬 Chat con tus Documentos</h2>
+        <h2 style="margin:0; font-size:1.8rem;">Chat con tus Documentos</h2>
         <p style="margin:0.5rem 0 0 0; opacity:0.9;">Haz preguntas inteligentes sobre el contenido de tus PDFs</p>
     </div>
     """, unsafe_allow_html=True)
@@ -91,7 +90,7 @@ def render_message(message):
     if message["role"] == "user":
         st.markdown(f"""
         <div class="user-message">
-            <div class="message-header user-header">👤 Tú</div>
+            <div class="message-header user-header">Usuario</div>
             <div class="message-content"><strong>{message['content']}</strong></div>
         </div>
         """, unsafe_allow_html=True)
@@ -99,16 +98,16 @@ def render_message(message):
     else:
         st.markdown(f"""
         <div class="assistant-message">
-            <div class="message-header assistant-header">🤖 CatchAI</div>
+            <div class="message-header assistant-header">CatchAI</div>
             <div class="message-content">{message['content']}</div>
         </div>
         """, unsafe_allow_html=True)
 
         if "sources" in message and message["sources"]:
-            with st.expander("📚 Ver fuentes", expanded=False):
+            with st.expander("Ver fuentes", expanded=False):
                 for i, source in enumerate(message["sources"]):
-                    st.write(f"**📄 Fuente {i+1}:** {source.metadata.get('source_file', 'Desconocido')}")
-                    st.write(f"**📖 Página:** {source.metadata.get('page', 'N/A')}")
+                    st.write(f"**Fuente {i+1}:** {source.metadata.get('source_file', 'Desconocido')}")
+                    st.write(f"**Página:** {source.metadata.get('page', 'N/A')}")
                     st.write(f"_{source.page_content[:200]}..._")
                     st.write("---")
 
@@ -135,7 +134,7 @@ def render_suggested_questions():
     st.markdown("---")
     st.markdown("""
     <h3 style="color: #ffffff; font-weight: 600; margin-bottom: 1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
-        💡 Preguntas Sugeridas
+        Preguntas Sugeridas
     </h3>
     """, unsafe_allow_html=True)
     
