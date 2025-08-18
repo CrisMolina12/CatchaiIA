@@ -1,4 +1,4 @@
-# CatchAI Copilot - Copiloto Conversacional sobre Documentos
+# CatchAI 
 
 Una aplicación de inteligencia artificial que permite a los usuarios subir documentos PDF y realizar consultas en lenguaje natural sobre su contenido.
 
