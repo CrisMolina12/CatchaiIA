@@ -62,11 +62,7 @@ El sistema utiliza una **Arquitectura por Capas** que separa las responsabilidad
 
 ### Limitaciones actuales:
 - Solo soporta archivos PDF
-- Diseñado para un usuario por sesión
 - No mantiene historial entre sesiones
-- Limitado por la RAM disponible
 
 ### Mejoras futuras:
-- **Corto plazo**: Soporte para DOCX y TXT, mejorar UI
-- **Mediano plazo**: Múltiples usuarios, persistencia de sesiones
-- **Largo plazo**: Procesamiento de imágenes, integración con cloud storage
+- Soporte para DOCX y TXT, mejorar UI
