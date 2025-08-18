@@ -4,73 +4,30 @@ Una aplicación de inteligencia artificial que permite a los usuarios subir docu
 
 ## Instrucciones para levantar el entorno
 
-### Prerrequisitos
-- Docker y Docker Compose instalados
-- Clave API de Google Gemini
-
-### Pasos de instalación
-
-1. **Configurar variables de entorno**
-\`\`\`bash
-# Editar el archivo .env y agregar tu GOOGLE_API_KEY
+1. **Editar el archivo .env y agregar tu GOOGLE_API_KEY**
+\`\`\`
 GOOGLE_API_KEY=tu_clave_api_aqui
 \`\`\`
 
-2. **Levantar el entorno con Docker**
+2. **Levantar el entorno**
 \`\`\`bash
 docker-compose up
 \`\`\`
-
-### Detalles del contenedor Docker
-
-El proyecto utiliza Docker para garantizar un entorno consistente y reproducible:
-
-- **Imagen base**: Python 3.11-slim para optimizar tamaño y rendimiento
-- **Puerto expuesto**: 8501 (puerto estándar de Streamlit)
-- **Volúmenes montados**: 
-  - `./data:/app/data` - Persistencia de la base de datos ChromaDB
-  - `./src:/app/src` - Código fuente para desarrollo en tiempo real
-- **Variables de entorno**: GOOGLE_API_KEY se pasa automáticamente al contenedor
-- **Healthcheck**: Verifica que Streamlit esté funcionando correctamente
-- **Reinicio automático**: El contenedor se reinicia automáticamente si falla
 
 3. **Acceder a la aplicación**
 - URL: http://localhost:8501
 
 ## Arquitectura del sistema
 
-### Patrón: Arquitectura por Capas (Layered Architecture)
+El sistema utiliza una **Arquitectura por Capas** que separa las responsabilidades en cuatro niveles:
 
-\`\`\`
-CAPA DE PRESENTACIÓN
-├── Streamlit UI
-├── Interfaz de carga de archivos
-└── Visualización de respuestas
+**Capa de Presentación**: Streamlit maneja la interfaz web donde los usuarios suben PDFs y hacen preguntas. Incluye formularios de carga y visualización de respuestas.
 
-CAPA DE LÓGICA DE NEGOCIO  
-├── Conversation Manager
-├── Gestión de sesiones
-└── Coordinación entre servicios
+**Capa de Lógica de Negocio**: El Conversation Manager coordina todo el flujo entre componentes, gestiona las sesiones de usuario y mantiene el contexto de las conversaciones.
 
-CAPA DE SERVICIOS
-├── Document Processor (PyPDF)
-├── AI Services (Gemini API)
-└── Vector Processing (sentence-transformers)
+**Capa de Servicios**: Tres servicios principales trabajan aquí - Document Processor extrae texto de PDFs con PyPDF, los embeddings se generan con sentence-transformers, y Gemini API procesa las consultas para generar respuestas inteligentes.
 
-CAPA DE PERSISTENCIA
-├── ChromaDB
-└── Almacenamiento de vectores
-\`\`\`
-
-### Componentes principales:
-
-**Capa de Presentación**: Interfaz de usuario desarrollada en Streamlit que maneja la interacción con el usuario, carga de archivos y visualización de respuestas.
-
-**Capa de Lógica de Negocio**: Gestiona el flujo conversacional, coordina las operaciones entre capas y mantiene el estado de la sesión.
-
-**Capa de Servicios**: Procesa documentos PDF, genera embeddings vectoriales y se comunica con la API de Gemini para generar respuestas.
-
-**Capa de Persistencia**: Almacena los vectores de documentos en ChromaDB para realizar búsquedas semánticas eficientes.
+**Capa de Persistencia**: ChromaDB almacena los vectores de los documentos procesados, permitiendo búsquedas semánticas rápidas cuando el usuario hace preguntas.
 
 ## Justificación de elecciones técnicas
 
